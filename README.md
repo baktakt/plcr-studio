@@ -182,6 +182,7 @@ plcr-studio/
 | `NEXTAUTH_URL` | If auth enabled | Your application URL (e.g., `http://localhost:3000`) |
 | `GOOGLE_CLIENT_ID` | If auth enabled | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | If auth enabled | Google OAuth client secret |
+| `ALLOWED_EMAILS` | No | Comma-separated list of allowed email addresses. If empty, all users can sign in. |
 
 ### Authentication Setup
 
@@ -214,12 +215,28 @@ NEXTAUTH_URL=http://localhost:3000  # Change for production
 # Google OAuth credentials
 GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+
+# (Optional) Restrict access to specific email addresses
+ALLOWED_EMAILS=yourname@gmail.com,teammate@company.com
 ```
 
 Generate a secure `NEXTAUTH_SECRET`:
 ```bash
 openssl rand -base64 32
 ```
+
+#### Restricting Access to Specific Users
+
+By default, any user with a Google account can sign in. To restrict access to specific email addresses:
+
+1. Add the `ALLOWED_EMAILS` environment variable to your `.env`:
+   ```env
+   ALLOWED_EMAILS=user1@example.com,user2@example.com,admin@yourdomain.com
+   ```
+
+2. Separate multiple emails with commas
+3. Users not on the list will see an "Access Denied" error page
+4. If `ALLOWED_EMAILS` is empty or omitted, all authenticated users are allowed
 
 #### 3. Restart Development Server
 
