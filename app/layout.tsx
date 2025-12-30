@@ -21,11 +21,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {isAuthEnabled ? (
-          <AuthProvider session={session}>{children}</AuthProvider>
-        ) : (
-          children
-        )}
+        <AuthProvider session={session}>{children}</AuthProvider>
       </body>
     </html>
   );
