@@ -36,8 +36,8 @@ export function useGenerationManager({
 
       // Add padding
       const padding = 50;
-      const width = Math.ceil(maxX - minX + padding * 2);
-      const height = Math.ceil(maxY - minY + padding * 2);
+      const _width = Math.ceil(maxX - minX + padding * 2);
+      const _height = Math.ceil(maxY - minY + padding * 2);
 
       // Import exportToBlob dynamically
       const { exportToBlob } = await import('@excalidraw/excalidraw');
@@ -54,7 +54,8 @@ export function useGenerationManager({
       });
 
       return blob;
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       return null;
     }
   }, [excalidrawAPI]);
@@ -171,7 +172,6 @@ export function useGenerationManager({
       throw error;
     }
   }, [
-    excalidrawAPI,
     getEnvironmentImage,
     getProductImages,
     exportCanvasToSketch,

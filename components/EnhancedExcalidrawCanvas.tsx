@@ -30,7 +30,7 @@ export default function EnhancedExcalidrawCanvas({
   checkImageExists,
   onGenerateImage,
   onGenerateEnvironment,
-  onExport,
+  onExport: _onExport,
   isGenerating,
   canGenerateImage,
   onExcalidrawAPIReady,
@@ -328,7 +328,7 @@ export default function EnhancedExcalidrawCanvas({
     } finally {
       setIsIterating(false);
     }
-  }, [iterateImageId, selectedModel]);
+  }, [iterateImageId, selectedModel, selectedQuality, selectedAspectRatio]);
 
   // Helper function to check if an image is inside a frame
   const getImageFrameType = useCallback((imageEl: any, elements: any[]): 'environment' | 'product' | null => {

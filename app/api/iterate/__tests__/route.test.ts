@@ -17,7 +17,6 @@ vi.mock('@google/genai', () => {
 describe('/api/iterate', () => {
   const mockSketchImage = 'data:image/png;base64,sketchdata';
   const mockEnvironmentImage = 'data:image/png;base64,environmentdata';
-  const mockProductImage = 'data:image/png;base64,productdata';
 
   beforeEach(() => {
     vi.clearAllMocks();

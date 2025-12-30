@@ -5,7 +5,7 @@ import InitialEnvironmentDialog from "./InitialEnvironmentDialog";
 import EnhancedExcalidrawCanvas from "./EnhancedExcalidrawCanvas";
 import { useImageMetadata } from "@/hooks/useImageMetadata";
 import { useGenerationManager } from "@/hooks/useGenerationManager";
-import type { ImageMetadata, GenerationHistoryItem } from "@/types/canvas";
+import type { ImageMetadata } from "@/types/canvas";
 
 export default function CanvasWorkspace() {
   // Environment setup state
@@ -19,12 +19,10 @@ export default function CanvasWorkspace() {
     getImageByElementId,
     getEnvironmentImage,
     getProductImages,
-    getAllImages,
   } = useImageMetadata();
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationHistory, setGenerationHistory] = useState<GenerationHistoryItem[]>([]);
   const [selectedModel, setSelectedModel] = useState<string>("");
   const [selectedQuality, setSelectedQuality] = useState<string>("");
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<string>("");
@@ -240,27 +238,13 @@ export default function CanvasWorkspace() {
 
       if (generatedImageUrl) {
         await addGeneratedImageToCanvas(generatedImageUrl);
-
-        // Store in generation history
-        const historyItem: GenerationHistoryItem = {
-          id: `gen-${Date.now()}`,
-          generatedImageUrl,
-          prompt: '',
-          timestamp: Date.now(),
-          sourceImages: {
-            environmentId: getEnvironmentImage()?.id || '',
-            productIds: getProductImages().map(p => p.id),
-          },
-        };
-
-        setGenerationHistory(prev => [...prev, historyItem]);
       }
     } catch (error: any) {
       alert(`Generation failed: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }
-  }, [generateImage, getEnvironmentImage, getProductImages, addGeneratedImageToCanvas, selectedModel, selectedQuality, selectedAspectRatio, canGenerate]);
+  }, [generateImage, addGeneratedImageToCanvas, selectedModel, selectedQuality, selectedAspectRatio, canGenerate]);
 
   // Handle generate environment button
   const handleGenerateEnvironment = useCallback(() => {

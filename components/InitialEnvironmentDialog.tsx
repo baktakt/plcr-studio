@@ -82,7 +82,8 @@ export default function InitialEnvironmentDialog({
       } else {
         alert("Generation failed: " + (data.message || "Unknown error"));
       }
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       alert("Failed to generate environment. Please try again.");
     } finally {
       setIsGenerating(false);
