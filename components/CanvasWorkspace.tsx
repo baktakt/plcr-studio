@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import InitialEnvironmentDialog from "./InitialEnvironmentDialog";
 import EnhancedExcalidrawCanvas from "./EnhancedExcalidrawCanvas";
+import UserMenu from "./UserMenu";
 import { useImageMetadata } from "@/hooks/useImageMetadata";
 import { useGenerationManager } from "@/hooks/useGenerationManager";
 import type { ImageMetadata } from "@/types/canvas";
@@ -279,6 +280,9 @@ export default function CanvasWorkspace() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* User menu (only shown if user is authenticated) */}
+      <UserMenu />
+
       {/* Environment dialog (optional) */}
       <InitialEnvironmentDialog
         isOpen={showEnvironmentDialog}

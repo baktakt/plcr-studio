@@ -72,7 +72,12 @@ Perfect for:
 
    Create a `.env` file in the root directory:
    ```env
+   # Required
    GEMINI_API_KEY=your_gemini_api_key_here
+
+   # Optional: Enable authentication (see Authentication Setup below)
+   AUTH_ENABLED=false
+   NEXT_PUBLIC_AUTH_ENABLED=false
    ```
 
 4. **Run the development server**
@@ -172,6 +177,87 @@ plcr-studio/
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `GEMINI_API_KEY` | Yes | Your Google Gemini API key |
+| `AUTH_ENABLED` | No | Set to `true` to enable authentication (default: `false`) |
+| `NEXTAUTH_SECRET` | If auth enabled | Secret for NextAuth.js session encryption |
+| `NEXTAUTH_URL` | If auth enabled | Your application URL (e.g., `http://localhost:3000`) |
+| `GOOGLE_CLIENT_ID` | If auth enabled | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | If auth enabled | Google OAuth client secret |
+
+### Authentication Setup
+
+Authentication is **optional** and disabled by default. To enable Google OAuth authentication:
+
+#### 1. Create Google OAuth Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Create a new project or select existing one
+3. Navigate to **APIs & Services** > **Credentials**
+4. Click **Create Credentials** > **OAuth client ID**
+5. Select **Web application**
+6. Add authorized redirect URIs:
+   - Development: `http://localhost:3000/api/auth/callback/google`
+   - Production: `https://yourdomain.com/api/auth/callback/google`
+7. Copy your **Client ID** and **Client Secret**
+
+#### 2. Configure Environment Variables
+
+Add to your `.env` file:
+
+```env
+# Enable authentication
+AUTH_ENABLED=true
+
+# NextAuth configuration
+NEXTAUTH_SECRET=your_generated_secret_here
+NEXTAUTH_URL=http://localhost:3000  # Change for production
+
+# Google OAuth credentials
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+```
+
+Generate a secure `NEXTAUTH_SECRET`:
+```bash
+openssl rand -base64 32
+```
+
+#### 3. Restart Development Server
+
+```bash
+npm run dev
+```
+
+#### 4. Test Authentication
+
+1. Navigate to `http://localhost:3000`
+2. You'll be redirected to the sign-in page
+3. Click "Sign in with Google"
+4. Authorize the application
+5. You'll be redirected back to the canvas
+
+#### Adding More Providers
+
+The system is designed to support multiple auth providers. To add Microsoft, GitHub, or other providers:
+
+1. Install the provider if needed (most are included with NextAuth.js)
+2. Update `auth.ts` to include the new provider
+3. Add provider credentials to `.env`
+4. Update the sign-in page UI
+
+Example for Microsoft provider:
+
+```typescript
+// In auth.ts
+import MicrosoftProvider from "next-auth/providers/microsoft";
+
+providers: [
+  GoogleProvider({ /* ... */ }),
+  MicrosoftProvider({
+    clientId: process.env.MICROSOFT_CLIENT_ID!,
+    clientSecret: process.env.MICROSOFT_CLIENT_SECRET!,
+  }),
+]
+```
 
 ### API Routes
 
