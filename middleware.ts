@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   // If auth is enabled, check authentication
   const session = await auth();
 
-  // Allow access to auth pages and API routes
+  // Allow access to auth pages and auth API routes
   if (
     request.nextUrl.pathname.startsWith("/api/auth") ||
     request.nextUrl.pathname.startsWith("/auth")
@@ -21,7 +21,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Redirect to sign in if not authenticated
+  // For API routes (other than /api/auth), return 401 if not authenticated
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Authentication required" },
+        { status: 401 }
+      );
+    }
+    return NextResponse.next();
+  }
+
+  // For page routes, redirect to sign in if not authenticated
   if (!session) {
     const signInUrl = new URL("/auth/signin", request.url);
     signInUrl.searchParams.set("callbackUrl", request.url);
