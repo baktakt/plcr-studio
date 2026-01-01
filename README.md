@@ -57,7 +57,7 @@ Perfect for:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Phantazy-Interactive/plcr-studio.git
+   git clone https://github.com/baktakt/plcr-studio.git
    cd plcr-studio
    ```
 
@@ -362,7 +362,7 @@ We welcome contributions from the community! Here's how you can help:
 
 1. **Fork the repository**
    ```bash
-   git clone https://github.com/Phantazy-Interactive/plcr-studio.git
+   git clone https://github.com/baktakt/plcr-studio.git
    cd plcr-studio
    git remote add upstream https://github.com/originalowner/plcr-studio.git
    ```
@@ -455,8 +455,8 @@ This project was inspired by the need for accessible, AI-powered product visuali
 
 ## 📬 Support & Contact
 
-- **Issues**: [GitHub Issues](https://github.com/Phantazy-Interactive/plcr-studio/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Phantazy-Interactive/plcr-studio/discussions)
+- **Issues**: [GitHub Issues](https://github.com/baktakt/plcr-studio/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/baktakt/plcr-studio/discussions)
 
 ---
 
