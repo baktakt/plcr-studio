@@ -34,9 +34,9 @@ export const {
   },
   callbacks: {
     async signIn({ user }) {
-      // If no allowed emails are configured, allow all users
+      // If no allowed emails are configured, deny all users (must explicitly configure allowlist)
       if (allowedEmails.length === 0) {
-        return true;
+        return false;
       }
 
       // Check if user's email is in the allowed list

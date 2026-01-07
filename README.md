@@ -2,7 +2,7 @@
 
 **AI-Powered Product Composition Tool** - Seamlessly composite products into photorealistic environments using Google's Gemini AI and Excalidraw's intuitive canvas interface.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Gemini AI](https://img.shields.io/badge/Gemini-2.5%20Flash%20%7C%203%20Pro-orange)](https://ai.google.dev/)
@@ -182,7 +182,7 @@ plcr-studio/
 | `NEXTAUTH_URL` | If auth enabled | Your application URL (e.g., `http://localhost:3000`) |
 | `GOOGLE_CLIENT_ID` | If auth enabled | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | If auth enabled | Google OAuth client secret |
-| `ALLOWED_EMAILS` | No | Comma-separated list of allowed email addresses. If empty, all users can sign in. |
+| `ALLOWED_EMAILS` | **Yes** (if auth enabled) | Comma-separated list of allowed email addresses. **Must be explicitly set** - if empty, no users can sign in. |
 
 ### Authentication Setup
 
@@ -216,7 +216,8 @@ NEXTAUTH_URL=http://localhost:3000  # Change for production
 GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 
-# (Optional) Restrict access to specific email addresses
+# Required: Explicitly list allowed email addresses
+# If left empty, NO users will be able to sign in
 ALLOWED_EMAILS=yourname@gmail.com,teammate@company.com
 ```
 
@@ -225,9 +226,9 @@ Generate a secure `NEXTAUTH_SECRET`:
 openssl rand -base64 32
 ```
 
-#### Restricting Access to Specific Users
+#### Configuring Allowed Users
 
-By default, any user with a Google account can sign in. To restrict access to specific email addresses:
+**IMPORTANT**: When authentication is enabled, you **must** explicitly configure which users can access the application.
 
 1. Add the `ALLOWED_EMAILS` environment variable to your `.env`:
    ```env
@@ -236,7 +237,7 @@ By default, any user with a Google account can sign in. To restrict access to sp
 
 2. Separate multiple emails with commas
 3. Users not on the list will see an "Access Denied" error page
-4. If `ALLOWED_EMAILS` is empty or omitted, all authenticated users are allowed
+4. **If `ALLOWED_EMAILS` is empty, NO users will be able to sign in** (security by default)
 
 #### 3. Restart Development Server
 
