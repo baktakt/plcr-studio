@@ -76,8 +76,10 @@ Perfect for:
    GEMINI_API_KEY=your_gemini_api_key_here
 
    # Optional: Enable authentication (see Authentication Setup below)
+   # ⚠️ WARNING: When AUTH_ENABLED=false, ANYONE can access the application and make API calls
+   # This means your GEMINI_API_KEY will be exposed to public use and could incur costs
+   # ONLY use AUTH_ENABLED=false for local development on your personal machine
    AUTH_ENABLED=false
-   NEXT_PUBLIC_AUTH_ENABLED=false
    ```
 
 4. **Run the development server**
@@ -177,7 +179,7 @@ plcr-studio/
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `GEMINI_API_KEY` | Yes | Your Google Gemini API key |
-| `AUTH_ENABLED` | No | Set to `true` to enable authentication (default: `false`) |
+| `AUTH_ENABLED` | No | Set to `true` to enable authentication (default: `false`). **⚠️ WARNING**: When `false`, anyone can access and use your API key. **Only use `false` for local development.** |
 | `NEXTAUTH_SECRET` | If auth enabled | Secret for NextAuth.js session encryption |
 | `NEXTAUTH_URL` | If auth enabled | Your application URL (e.g., `http://localhost:3000`) |
 | `GOOGLE_CLIENT_ID` | If auth enabled | Google OAuth client ID |
@@ -186,7 +188,22 @@ plcr-studio/
 
 ### Authentication Setup
 
-Authentication is **optional** and disabled by default. To enable Google OAuth authentication:
+Authentication is **optional** and disabled by default.
+
+> ⚠️ **SECURITY WARNING**: When `AUTH_ENABLED=false`, your application is **completely open to the public**. Anyone who discovers your URL can:
+> - Access the application interface
+> - Make unlimited API calls using your GEMINI_API_KEY
+> - Potentially incur significant costs on your Google Cloud account
+>
+> **Recommendation**:
+> - **ONLY use `AUTH_ENABLED=false` for local development** on your personal machine (localhost)
+> - **ALWAYS enable authentication** (`AUTH_ENABLED=true`) for:
+>   - Production deployments
+>   - Staging/testing environments
+>   - Any instance accessible from the internet
+>   - Shared development environments
+
+To enable Google OAuth authentication:
 
 #### 1. Create Google OAuth Credentials
 
