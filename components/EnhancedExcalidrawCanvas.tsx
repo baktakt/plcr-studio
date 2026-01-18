@@ -3,6 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { ImageMetadata } from "@/types/canvas";
 import IteratePromptDialog from "./IteratePromptDialog";
+import PromptPreviewModal from "./PromptPreviewModal";
+import {
+  optimizePrompt,
+  getSkipOptimizerPreference,
+} from "@/lib/promptOptimizer";
 
 interface EnhancedExcalidrawCanvasProps {
   onImageAdded: (metadata: ImageMetadata) => void;
@@ -57,10 +62,22 @@ export default function EnhancedExcalidrawCanvas({
   const [showIterateDialog, setShowIterateDialog] = useState(false);
   const [iterateImageId, setIterateImageId] = useState<string | null>(null);
   const [isIterating, setIsIterating] = useState(false);
+  const [iteratePrompt, setIteratePrompt] = useState("");
+
+  // Iteration optimizer state
+  const [showIterateOptimizerModal, setShowIterateOptimizerModal] = useState(false);
+  const [optimizedIteratePrompt, setOptimizedIteratePrompt] = useState("");
+  const [iterateOptimizationNotes, setIterateOptimizationNotes] = useState<string[]>([]);
 
   // Create asset dialog state
   const [showCreateAssetDialog, setShowCreateAssetDialog] = useState(false);
   const [isCreatingAsset, setIsCreatingAsset] = useState(false);
+  const [assetPrompt, setAssetPrompt] = useState("");
+
+  // Asset creation optimizer state
+  const [showAssetOptimizerModal, setShowAssetOptimizerModal] = useState(false);
+  const [optimizedAssetPrompt, setOptimizedAssetPrompt] = useState("");
+  const [assetOptimizationNotes, setAssetOptimizationNotes] = useState<string[]>([]);
 
   // Selected image tracking for floating menu
   const [selectedImageElement, setSelectedImageElement] = useState<any>(null);
@@ -242,7 +259,30 @@ export default function EnhancedExcalidrawCanvas({
   }, []);
 
   // Handle iterate submission
-  const handleIterateSubmit = useCallback(async (prompt: string) => {
+  const handleIterateSubmit = useCallback((prompt: string) => {
+    if (!iterateImageId || !excalidrawAPIRef.current) return;
+
+    setIteratePrompt(prompt);
+    setShowIterateDialog(false);
+
+    // Check if user wants to skip the optimizer
+    const shouldSkip = getSkipOptimizerPreference();
+
+    // Optimize the prompt
+    const result = optimizePrompt(prompt);
+    setOptimizedIteratePrompt(result.optimized);
+    setIterateOptimizationNotes(result.notes);
+
+    if (shouldSkip) {
+      // Auto-use optimized prompt without showing modal
+      performIteration(result.optimized);
+    } else {
+      // Show optimizer modal for review
+      setShowIterateOptimizerModal(true);
+    }
+  }, [iterateImageId]);
+
+  const performIteration = useCallback(async (promptToUse: string) => {
     if (!iterateImageId || !excalidrawAPIRef.current) return;
 
     try {
@@ -269,7 +309,7 @@ export default function EnhancedExcalidrawCanvas({
         },
         body: JSON.stringify({
           image: fileData.dataURL,
-          prompt,
+          prompt: promptToUse,
           model: selectedModel,
           ...(selectedModel === "gemini-3-pro-image-preview" && { quality: selectedQuality }),
           aspectRatio: selectedAspectRatio,
@@ -397,8 +437,7 @@ export default function EnhancedExcalidrawCanvas({
           }
         }, 100);
 
-        // Close dialog
-        setShowIterateDialog(false);
+        // Reset state
         setIterateImageId(null);
       } else {
         throw new Error(data.message || 'Iteration failed');
@@ -1004,7 +1043,8 @@ export default function EnhancedExcalidrawCanvas({
               </p>
 
               <textarea
-                id="asset-prompt"
+                value={assetPrompt}
+                onChange={(e) => setAssetPrompt(e.target.value)}
                 placeholder="Example: A red sports car, side view, photorealistic..."
                 className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent mb-4"
                 disabled={isCreatingAsset}
@@ -1012,7 +1052,10 @@ export default function EnhancedExcalidrawCanvas({
 
               <div className="flex gap-3 justify-end">
                 <button
-                  onClick={() => setShowCreateAssetDialog(false)}
+                  onClick={() => {
+                    setShowCreateAssetDialog(false);
+                    setAssetPrompt(""); // Reset prompt on cancel
+                  }}
                   disabled={isCreatingAsset}
                   className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -1020,11 +1063,31 @@ export default function EnhancedExcalidrawCanvas({
                 </button>
                 <button
                   onClick={() => {
-                    const textarea = document.getElementById('asset-prompt') as HTMLTextAreaElement;
-                    const prompt = textarea?.value.trim();
-                    if (prompt) handleCreateAsset(prompt);
+                    const prompt = assetPrompt.trim();
+                    if (!prompt) {
+                      alert("Please enter a description");
+                      return;
+                    }
+
+                    // Check if user wants to skip the optimizer
+                    const shouldSkip = getSkipOptimizerPreference();
+
+                    // Optimize the prompt
+                    const result = optimizePrompt(prompt);
+                    setOptimizedAssetPrompt(result.optimized);
+                    setAssetOptimizationNotes(result.notes);
+
+                    if (shouldSkip) {
+                      // Auto-use optimized prompt without showing modal
+                      setShowCreateAssetDialog(false);
+                      handleCreateAsset(result.optimized);
+                    } else {
+                      // Show optimizer modal for review
+                      setShowCreateAssetDialog(false);
+                      setShowAssetOptimizerModal(true);
+                    }
                   }}
-                  disabled={isCreatingAsset}
+                  disabled={isCreatingAsset || !assetPrompt.trim()}
                   className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {isCreatingAsset ? "Creating..." : "Create Asset"}
@@ -1034,6 +1097,40 @@ export default function EnhancedExcalidrawCanvas({
           </div>
         </div>
       )}
+
+      {/* Asset Creation Prompt Optimizer Modal */}
+      <PromptPreviewModal
+        open={showAssetOptimizerModal}
+        title="Optimize Asset Prompt"
+        originalPrompt={assetPrompt}
+        optimizedPrompt={optimizedAssetPrompt}
+        notes={assetOptimizationNotes}
+        onCancel={() => {
+          setShowAssetOptimizerModal(false);
+          setShowCreateAssetDialog(true); // Return to the asset dialog
+        }}
+        onConfirm={(finalPrompt) => {
+          setShowAssetOptimizerModal(false);
+          handleCreateAsset(finalPrompt);
+        }}
+      />
+
+      {/* Iteration Prompt Optimizer Modal */}
+      <PromptPreviewModal
+        open={showIterateOptimizerModal}
+        title="Optimize Iteration Prompt"
+        originalPrompt={iteratePrompt}
+        optimizedPrompt={optimizedIteratePrompt}
+        notes={iterateOptimizationNotes}
+        onCancel={() => {
+          setShowIterateOptimizerModal(false);
+          setShowIterateDialog(true); // Return to the iterate dialog
+        }}
+        onConfirm={(finalPrompt) => {
+          setShowIterateOptimizerModal(false);
+          performIteration(finalPrompt);
+        }}
+      />
     </div>
   );
 }

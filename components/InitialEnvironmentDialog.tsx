@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import PromptPreviewModal from "./PromptPreviewModal";
+import {
+  optimizePrompt,
+  getSkipOptimizerPreference,
+  setSkipOptimizerPreference,
+} from "@/lib/promptOptimizer";
 
 interface InitialEnvironmentDialogProps {
   isOpen: boolean;
@@ -31,6 +37,11 @@ export default function InitialEnvironmentDialog({
   const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
   const [showEnhancedPrompt, setShowEnhancedPrompt] = useState(false);
 
+  // Prompt optimizer state
+  const [showOptimizerModal, setShowOptimizerModal] = useState(false);
+  const [optimizedPrompt, setOptimizedPrompt] = useState("");
+  const [optimizationNotes, setOptimizationNotes] = useState<string[]>([]);
+
   if (!isOpen) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,12 +60,39 @@ export default function InitialEnvironmentDialog({
     reader.readAsDataURL(file);
   };
 
-  const handleGenerate = async () => {
+  const handleGenerateClick = () => {
     if (!prompt.trim()) {
       alert("Please enter a description");
       return;
     }
 
+    // Check if user wants to skip the optimizer
+    const shouldSkip = getSkipOptimizerPreference();
+
+    // Optimize the prompt
+    const result = optimizePrompt(prompt);
+    setOptimizedPrompt(result.optimized);
+    setOptimizationNotes(result.notes);
+
+    if (shouldSkip) {
+      // Auto-use optimized prompt without showing modal
+      performGeneration(result.optimized);
+    } else {
+      // Show optimizer modal for review
+      setShowOptimizerModal(true);
+    }
+  };
+
+  const handleOptimizerConfirm = (finalPrompt: string) => {
+    setShowOptimizerModal(false);
+    performGeneration(finalPrompt);
+  };
+
+  const handleOptimizerCancel = () => {
+    setShowOptimizerModal(false);
+  };
+
+  const performGeneration = async (promptToUse: string) => {
     setIsGenerating(true);
 
     try {
@@ -64,7 +102,7 @@ export default function InitialEnvironmentDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt,
+          prompt: promptToUse,
           model: selectedModel,
           ...(selectedModel === "gemini-3-pro-image-preview" && { quality: selectedQuality }),
           aspectRatio: selectedAspectRatio,
@@ -231,7 +269,7 @@ export default function InitialEnvironmentDialog({
               />
               <div className="mt-4">
                 <button
-                  onClick={handleGenerate}
+                  onClick={handleGenerateClick}
                   disabled={isGenerating || !prompt.trim()}
                   className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
                 >
@@ -265,6 +303,19 @@ export default function InitialEnvironmentDialog({
           )}
         </div>
       </div>
+
+      {/* Prompt Optimizer Modal */}
+      <PromptPreviewModal
+        open={showOptimizerModal}
+        title="Optimize Environment Prompt"
+        originalPrompt={prompt}
+        optimizedPrompt={optimizedPrompt}
+        notes={optimizationNotes}
+        onCancel={handleOptimizerCancel}
+        onConfirm={(finalPrompt) => {
+          handleOptimizerConfirm(finalPrompt);
+        }}
+      />
     </div>
   );
 }

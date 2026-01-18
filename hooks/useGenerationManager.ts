@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
 import type { ImageMetadata } from '@/types/canvas';
 
+export const DEFAULT_COMPOSITION_PROMPT = "Composite the product(s) into the environment scene, matching lighting, perspective, and shadows. Make it look photorealistic.";
+
 interface UseGenerationManagerProps {
   excalidrawAPI: any;
   getEnvironmentImage: () => ImageMetadata | undefined;
@@ -112,7 +114,7 @@ export function useGenerationManager({
   }, []);
 
   // Generate image using the API
-  const generateImage = useCallback(async (model?: string, quality?: string, aspectRatio?: string): Promise<string | null> => {
+  const generateImage = useCallback(async (model?: string, quality?: string, aspectRatio?: string, customPrompt?: string): Promise<string | null> => {
     try {
       const sketchBlob = await exportCanvasToSketch();
       if (!sketchBlob) {
@@ -142,7 +144,7 @@ export function useGenerationManager({
         sketchImage: sketchDataUrl,
         environmentImage: resizedEnvironmentUrl,
         productImages: resizedProductUrls,
-        prompt: "Composite the product(s) into the environment scene, matching lighting, perspective, and shadows. Make it look photorealistic.",
+        prompt: customPrompt || DEFAULT_COMPOSITION_PROMPT,
         isFirstIteration: true,
         model: model || "gemini-2.5-flash-image",
         ...(model === "gemini-3-pro-image-preview" && quality && { quality }),

@@ -4,13 +4,23 @@ import { useState, useCallback } from "react";
 import InitialEnvironmentDialog from "./InitialEnvironmentDialog";
 import EnhancedExcalidrawCanvas from "./EnhancedExcalidrawCanvas";
 import UserMenu from "./UserMenu";
+import PromptPreviewModal from "./PromptPreviewModal";
 import { useImageMetadata } from "@/hooks/useImageMetadata";
-import { useGenerationManager } from "@/hooks/useGenerationManager";
+import { useGenerationManager, DEFAULT_COMPOSITION_PROMPT } from "@/hooks/useGenerationManager";
+import {
+  optimizePrompt,
+  getSkipOptimizerPreference,
+} from "@/lib/promptOptimizer";
 import type { ImageMetadata } from "@/types/canvas";
 
 export default function CanvasWorkspace() {
   // Environment setup state
   const [showEnvironmentDialog, setShowEnvironmentDialog] = useState(false);
+
+  // Composition optimizer state
+  const [showCompositionOptimizerModal, setShowCompositionOptimizerModal] = useState(false);
+  const [optimizedCompositionPrompt, setOptimizedCompositionPrompt] = useState("");
+  const [compositionOptimizationNotes, setCompositionOptimizationNotes] = useState<string[]>([]);
 
   // Image tracking with custom hook
   const {
@@ -248,16 +258,34 @@ export default function CanvasWorkspace() {
   }, [getEnvironmentImage, getProductImages]);
 
   // Handle generate image button
-  const handleGenerateImage = useCallback(async () => {
+  const handleGenerateImage = useCallback(() => {
     if (!canGenerate()) {
       alert('Please add an environment image (in Environment frame) and at least one product image (in Product frame) before generating.');
       return;
     }
 
+    // Check if user wants to skip the optimizer
+    const shouldSkip = getSkipOptimizerPreference();
+
+    // Optimize the prompt
+    const result = optimizePrompt(DEFAULT_COMPOSITION_PROMPT);
+    setOptimizedCompositionPrompt(result.optimized);
+    setCompositionOptimizationNotes(result.notes);
+
+    if (shouldSkip) {
+      // Auto-use optimized prompt without showing modal
+      performComposition(result.optimized);
+    } else {
+      // Show optimizer modal for review
+      setShowCompositionOptimizerModal(true);
+    }
+  }, [canGenerate]);
+
+  const performComposition = useCallback(async (promptToUse: string) => {
     setIsGenerating(true);
 
     try {
-      const generatedImageUrl = await generateImage(selectedModel, selectedQuality, selectedAspectRatio);
+      const generatedImageUrl = await generateImage(selectedModel, selectedQuality, selectedAspectRatio, promptToUse);
 
       if (generatedImageUrl) {
         await addGeneratedImageToCanvas(generatedImageUrl);
@@ -267,7 +295,7 @@ export default function CanvasWorkspace() {
     } finally {
       setIsGenerating(false);
     }
-  }, [generateImage, addGeneratedImageToCanvas, selectedModel, selectedQuality, selectedAspectRatio, canGenerate]);
+  }, [generateImage, addGeneratedImageToCanvas, selectedModel, selectedQuality, selectedAspectRatio]);
 
   // Handle generate environment button
   const handleGenerateEnvironment = useCallback(() => {
@@ -327,6 +355,20 @@ export default function CanvasWorkspace() {
         onQualityChange={setSelectedQuality}
         selectedAspectRatio={selectedAspectRatio}
         onAspectRatioChange={setSelectedAspectRatio}
+      />
+
+      {/* Composition Prompt Optimizer Modal */}
+      <PromptPreviewModal
+        open={showCompositionOptimizerModal}
+        title="Optimize Composition Prompt"
+        originalPrompt={DEFAULT_COMPOSITION_PROMPT}
+        optimizedPrompt={optimizedCompositionPrompt}
+        notes={compositionOptimizationNotes}
+        onCancel={() => setShowCompositionOptimizerModal(false)}
+        onConfirm={(finalPrompt) => {
+          setShowCompositionOptimizerModal(false);
+          performComposition(finalPrompt);
+        }}
       />
 
       {/* Main canvas - always shown */}
