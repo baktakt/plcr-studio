@@ -271,7 +271,7 @@ export default function EnhancedExcalidrawCanvas({
           image: fileData.dataURL,
           prompt,
           model: selectedModel,
-          ...(selectedModel === "gemini-3-pro-image-preview" && { quality: selectedQuality }),
+          ...(selectedModel === "gemini-3.1-pro-image-preview" && { quality: selectedQuality }),
           aspectRatio: selectedAspectRatio,
         }),
       });
@@ -600,7 +600,7 @@ export default function EnhancedExcalidrawCanvas({
         body: JSON.stringify({
           prompt,
           model: selectedModel,
-          ...(selectedModel === "gemini-3-pro-image-preview" && { quality: selectedQuality }),
+          ...(selectedModel === "gemini-3.1-pro-image-preview" && { quality: selectedQuality }),
           aspectRatio: selectedAspectRatio,
         }),
       });
@@ -730,7 +730,7 @@ export default function EnhancedExcalidrawCanvas({
 
   // Custom top-right UI with icon buttons
   const renderTopRightUI = useCallback(() => {
-    const isProModel = selectedModel === 'gemini-3-pro-image-preview';
+    const isProModel = selectedModel === 'gemini-3.1-pro-image-preview';
     const hasModelSelected = selectedModel !== '';
 
     return (
@@ -752,7 +752,7 @@ export default function EnhancedExcalidrawCanvas({
         >
           <option value="">Choose model...</option>
           <option value="gemini-2.5-flash-image">Gemini 2.5 Flash</option>
-          <option value="gemini-3-pro-image-preview">Gemini 3 Pro</option>
+          <option value="gemini-3.1-pro-image-preview">Gemini 3.1 Pro</option>
         </select>
 
         {/* Quality Selector (only for Pro model) */}

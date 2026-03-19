@@ -28,7 +28,7 @@ Perfect for:
 ### 🤖 **AI-Powered Generation**
 - **Dual Model Support**:
   - **Gemini 2.5 Flash**: Fast generation at 1024px resolution
-  - **Gemini 3 Pro**: Professional quality with 1K, 2K, and 4K output
+  - **Gemini 3.1 Pro**: Professional quality with 1K, 2K, and 4K output
 - **Multiple Aspect Ratios**: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9, 21:9
 - **Smart Prompting**: AI enhances environment generation prompts for photorealism
 - **Multi-Reference Support**: Use multiple product images for better understanding of the object
@@ -99,7 +99,7 @@ Perfect for:
 
 Choose between:
 - **Gemini 2.5 Flash** - Fast generation, 1024px output
-- **Gemini 3 Pro** - Professional quality with quality options (1K/2K/4K)
+- **Gemini 3.1 Pro** - Professional quality with quality options (1K/2K/4K)
 
 ### Step 2: Configure Generation Settings
 
@@ -311,7 +311,7 @@ Models are configured in the UI dropdowns:
   - Quality dropdown disabled
   - Fastest generation
 
-- **Gemini 3 Pro** (`gemini-3-pro-image-preview`)
+- **Gemini 3.1 Pro** (`gemini-3.1-pro-image-preview`)
   - 1K, 2K, or 4K output
   - Quality dropdown enabled
   - Professional asset production
