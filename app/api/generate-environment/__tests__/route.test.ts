@@ -87,14 +87,14 @@ describe('/api/generate-environment', () => {
         method: 'POST',
         body: JSON.stringify({
           prompt: 'test room',
-          model: 'gemini-3-pro-image-preview',
+          model: 'gemini-3.1-pro-image-preview',
         }),
       });
 
       await POST(request);
 
       const imageGenerationCall = mockGenerateContent.mock.calls[1][0];
-      expect(imageGenerationCall.model).toBe('gemini-3-pro-image-preview');
+      expect(imageGenerationCall.model).toBe('gemini-3.1-pro-image-preview');
     });
 
     it('should include imageConfig when quality and aspectRatio are provided', async () => {

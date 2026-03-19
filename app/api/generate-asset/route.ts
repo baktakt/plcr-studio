@@ -60,7 +60,7 @@ Example of a good photorealistic asset prompt:
 Now create an enhanced photorealistic prompt based on the user's description:`;
 
     const enhancementResponse = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       contents: [{ text: promptEnhancementRequest }],
     });
 
