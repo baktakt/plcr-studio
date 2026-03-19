@@ -138,15 +138,16 @@ export function useGenerationManager({
         productImages.map(product => resizeImage(product.highResDataUrl, 2048))
       );
 
+      const modelToUse = model || "gemini-2.5-flash-image";
       const payload = {
         sketchImage: sketchDataUrl,
         environmentImage: resizedEnvironmentUrl,
         productImages: resizedProductUrls,
         prompt: "Composite the product(s) into the environment scene, matching lighting, perspective, and shadows. Make it look photorealistic.",
         isFirstIteration: true,
-        model: model || "gemini-2.5-flash-image",
+        model: modelToUse,
         ...(model === "gemini-3.1-pro-preview" && quality && { quality }),
-        aspectRatio: aspectRatio || undefined,
+        ...(modelToUse !== "gemini-3.1-pro-preview" && aspectRatio && { aspectRatio }),
       };
 
       const response = await fetch('/api/generate-combination', {

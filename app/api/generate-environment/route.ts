@@ -75,12 +75,14 @@ Now create an enhanced photorealistic prompt based on the user's description:`;
     };
 
     // Add image_config if quality or aspectRatio is provided
-    if (quality || aspectRatio) {
+    // Note: aspectRatio is not supported by gemini-3.1-pro-preview
+    const supportsAspectRatio = modelToUse !== "gemini-3.1-pro-preview";
+    if (quality || (aspectRatio && supportsAspectRatio)) {
       config.imageConfig = {};
       if (quality) {
         config.imageConfig.imageSize = quality;
       }
-      if (aspectRatio) {
+      if (aspectRatio && supportsAspectRatio) {
         config.imageConfig.aspectRatio = aspectRatio;
       }
     }
