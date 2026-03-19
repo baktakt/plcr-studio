@@ -121,6 +121,32 @@ describe('/api/generate-environment', () => {
         aspectRatio: '16:9',
       });
     });
+
+    it('should not include aspectRatio in imageConfig when using gemini-3.1-pro-preview', async () => {
+      mockGenerateContent.mockResolvedValue({
+        candidates: [{
+          content: { parts: [{ text: 'Enhanced prompt' }] },
+        }],
+      });
+
+      const request = new NextRequest('http://localhost:3000/api/generate-environment', {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt: 'test room',
+          model: 'gemini-3.1-pro-preview',
+          quality: '2K',
+          aspectRatio: '16:9',
+        }),
+      });
+
+      await POST(request);
+
+      const imageGenerationCall = mockGenerateContent.mock.calls[1][0];
+      expect(imageGenerationCall.config.imageConfig).toEqual({
+        imageSize: '2K',
+      });
+      expect(imageGenerationCall.config.imageConfig?.aspectRatio).toBeUndefined();
+    });
   });
 
   describe('Successful Generation', () => {
