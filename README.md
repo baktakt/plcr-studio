@@ -311,7 +311,7 @@ Models are configured in the UI dropdowns:
   - Quality dropdown disabled
   - Fastest generation
 
-- **Gemini 3.1 Pro** (`gemini-3.1-pro-image-preview`)
+- **Gemini 3.1 Pro** (`gemini-3.1-pro-preview`)
   - 1K, 2K, or 4K output
   - Quality dropdown enabled
   - Professional asset production
