@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize the Gemini API client
     const ai = new GoogleGenAI({ apiKey });
-    const modelToUse = model || "gemini-2.5-flash-image";
+    const modelToUse = model || "gemini-3.1-flash-image-preview";
 
     // Extract base64 data from all images
     const sketchData = extractBase64Data(sketchImage);
@@ -129,8 +129,8 @@ User Instructions: ${prompt}`;
     };
 
     // Add image_config if quality or aspectRatio is provided
-    // Note: aspectRatio is not supported by gemini-3.1-pro-preview
-    const supportsAspectRatio = modelToUse !== "gemini-3.1-pro-preview";
+    // Note: aspectRatio is not supported by gemini-3-pro-image-preview
+    const supportsAspectRatio = modelToUse !== "gemini-3-pro-image-preview";
     if (quality || (aspectRatio && supportsAspectRatio)) {
       config.imageConfig = {};
       if (quality) {

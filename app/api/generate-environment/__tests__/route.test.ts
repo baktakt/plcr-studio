@@ -73,7 +73,7 @@ describe('/api/generate-environment', () => {
       // Check that the image generation call used the default model
       expect(mockGenerateContent).toHaveBeenCalledTimes(2); // Once for enhancement, once for image
       const imageGenerationCall = mockGenerateContent.mock.calls[1][0];
-      expect(imageGenerationCall.model).toBe('gemini-2.5-flash-image');
+      expect(imageGenerationCall.model).toBe('gemini-3.1-flash-image-preview');
     });
 
     it('should use custom model when specified', async () => {
@@ -87,14 +87,14 @@ describe('/api/generate-environment', () => {
         method: 'POST',
         body: JSON.stringify({
           prompt: 'test room',
-          model: 'gemini-3.1-pro-preview',
+          model: 'gemini-3-pro-image-preview',
         }),
       });
 
       await POST(request);
 
       const imageGenerationCall = mockGenerateContent.mock.calls[1][0];
-      expect(imageGenerationCall.model).toBe('gemini-3.1-pro-preview');
+      expect(imageGenerationCall.model).toBe('gemini-3-pro-image-preview');
     });
 
     it('should include imageConfig when quality and aspectRatio are provided', async () => {
@@ -122,7 +122,7 @@ describe('/api/generate-environment', () => {
       });
     });
 
-    it('should not include aspectRatio in imageConfig when using gemini-3.1-pro-preview', async () => {
+    it('should not include aspectRatio in imageConfig when using gemini-3-pro-image-preview', async () => {
       mockGenerateContent.mockResolvedValue({
         candidates: [{
           content: { parts: [{ text: 'Enhanced prompt' }] },
@@ -133,7 +133,7 @@ describe('/api/generate-environment', () => {
         method: 'POST',
         body: JSON.stringify({
           prompt: 'test room',
-          model: 'gemini-3.1-pro-preview',
+          model: 'gemini-3-pro-image-preview',
           quality: '2K',
           aspectRatio: '16:9',
         }),

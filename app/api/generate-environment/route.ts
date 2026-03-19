@@ -67,7 +67,7 @@ Now create an enhanced photorealistic prompt based on the user's description:`;
     const enhancedPrompt = enhancementResponse.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || prompt;
 
     // Step 2: Generate the image using the enhanced prompt
-    const modelToUse = model || "gemini-2.5-flash-image";
+    const modelToUse = model || "gemini-3.1-flash-image-preview";
 
     // Build config with image settings
     const config: any = {
@@ -75,8 +75,8 @@ Now create an enhanced photorealistic prompt based on the user's description:`;
     };
 
     // Add image_config if quality or aspectRatio is provided
-    // Note: aspectRatio is not supported by gemini-3.1-pro-preview
-    const supportsAspectRatio = modelToUse !== "gemini-3.1-pro-preview";
+    // Note: aspectRatio is not supported by gemini-3-pro-image-preview
+    const supportsAspectRatio = modelToUse !== "gemini-3-pro-image-preview";
     if (quality || (aspectRatio && supportsAspectRatio)) {
       config.imageConfig = {};
       if (quality) {
