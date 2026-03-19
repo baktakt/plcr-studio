@@ -66,7 +66,7 @@ export default function InitialEnvironmentDialog({
         body: JSON.stringify({
           prompt,
           model: selectedModel,
-          ...(selectedModel === "gemini-3.1-pro-image-preview" && { quality: selectedQuality }),
+          ...(selectedModel === "gemini-3.1-pro-preview" && { quality: selectedQuality }),
           aspectRatio: selectedAspectRatio,
         }),
       });
@@ -151,19 +151,19 @@ export default function InitialEnvironmentDialog({
                 >
                   <option value="">Choose model...</option>
                   <option value="gemini-2.5-flash-image">Gemini 2.5 Flash</option>
-                  <option value="gemini-3.1-pro-image-preview">Gemini 3.1 Pro</option>
+                  <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
                 </select>
               </div>
 
               {onQualityChange && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Image Quality {selectedModel !== "gemini-3.1-pro-image-preview" && "(Pro only)"}
+                    Image Quality {selectedModel !== "gemini-3.1-pro-preview" && "(Pro only)"}
                   </label>
                   <select
                     value={selectedQuality}
                     onChange={(e) => onQualityChange(e.target.value)}
-                    disabled={selectedModel !== "gemini-3.1-pro-image-preview"}
+                    disabled={selectedModel !== "gemini-3.1-pro-preview"}
                     className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg font-medium text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
                     <option value="">Choose quality...</option>
